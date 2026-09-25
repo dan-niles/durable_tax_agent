@@ -50,13 +50,6 @@ type ReceiptsConfirmation record {|
     string note?;
 |};
 
-type TaxReturnOutcome record {|
-    string status;
-    string headline;
-    string message;
-    string? reference;
-|};
-
 type PrepareReturnRequest record {|
     decimal gross_income;
     map<decimal> qualifying_spend;
@@ -72,7 +65,7 @@ type ReturnRef record {|
 
 type ReturnStatus record {|
     string status;
-    TaxReturnOutcome? outcome = ();
+    string? summary = ();
 |};
 
 type PendingTasks record {|

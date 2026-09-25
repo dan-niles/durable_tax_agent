@@ -19,11 +19,11 @@ Qualifying spend: ${qualifyingSpend.toJsonString()}`);
     }
 
     resource function get tax\-returns/[string instanceId]() returns ReturnStatus|error {
-        TaxReturnOutcome|error outcome = taxAgent.getResult(instanceId);
-        if outcome is workflow:AgentBusyError {
+        string|error summary = taxAgent.getResult(instanceId);
+        if summary is workflow:AgentBusyError {
             return {status: "in progress"};
         }
-        return {status: "completed", outcome: check outcome};
+        return {status: "completed", summary: check summary};
     }
 
     resource function get tax\-returns/[string instanceId]/tasks() returns PendingTasks|error {

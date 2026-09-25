@@ -16,7 +16,6 @@ Every number comes from assessReturn under the published rules. Never compute, a
 Your final message is a short, plain-language summary (4-6 sentences) for the citizen that states which reliefs were applied and their total, the taxable income and estimated saving, any relief that needed receipts, the filing reference if the return was filed, and the filing deadline. Be factual and neutral in tone: this is a government service. Never promise an outcome, and never advise the citizen how to reduce tax further.`
     },
     model: taxAgentModel,
-    resultType: TaxReturnOutcome,
     tools: [assessReturn],
     activities: [
         {
