@@ -1,0 +1,145 @@
+openapi: 3.0.1
+info:
+  title: Durable Tax Filing Agent
+  version: 0.1.0
+paths:
+  /health:
+    get:
+      operationId: health
+      responses:
+        "200":
+          description: The service is up
+  /prepare-return:
+    post:
+      operationId: prepareReturn
+      summary: Start preparing and filing a return; returns the instance ID and the draft assessment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrepareReturnRequest"
+            example:
+              gross_income: 52000
+              qualifying_spend: {medical: 900, commuting: 1400, professional_travel: 2000}
+              tax_id: ASG-TAX-1001
+      responses:
+        "201":
+          description: The return was started
+          content:
+            application/json:
+              schema:
+                type: object
+  /tax-returns/{instanceId}:
+    get:
+      operationId: getReturn
+      summary: Get the status and final outcome of a return
+      parameters:
+        - $ref: "#/components/parameters/instanceId"
+      responses:
+        "200":
+          description: The return status
+          content:
+            application/json:
+              schema:
+                type: object
+  /tax-returns/{instanceId}/tasks:
+    get:
+      operationId: listTasks
+      summary: List the receipts task and the filing confirmation waiting for the citizen
+      parameters:
+        - $ref: "#/components/parameters/instanceId"
+      responses:
+        "200":
+          description: Pending tasks and approvals
+          content:
+            application/json:
+              schema:
+                type: object
+  /tasks/{taskId}:
+    post:
+      operationId: confirmReceipts
+      summary: Confirm that the receipts are attached
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/userRole"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [attached]
+              properties:
+                attached:
+                  type: boolean
+                note:
+                  type: string
+            example:
+              attached: true
+      responses:
+        "202":
+          description: The confirmation was recorded
+  /approvals/{taskId}:
+    post:
+      operationId: confirmFiling
+      summary: Confirm or reject filing the return
+      parameters:
+        - $ref: "#/components/parameters/taskId"
+        - $ref: "#/components/parameters/userRole"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action:
+                  type: string
+                  enum: [proceed, proceed-with-input, reject]
+                feedback:
+                  type: string
+            example:
+              action: proceed
+      responses:
+        "202":
+          description: The decision was recorded
+components:
+  parameters:
+    instanceId:
+      name: instanceId
+      in: path
+      required: true
+      schema:
+        type: string
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      schema:
+        type: string
+    userRole:
+      name: x-user-role
+      in: header
+      required: true
+      schema:
+        type: string
+        example: citizen
+  schemas:
+    PrepareReturnRequest:
+      type: object
+      required: [gross_income, qualifying_spend, tax_id]
+      properties:
+        gross_income:
+          type: number
+        qualifying_spend:
+          type: object
+          additionalProperties:
+            type: number
+        tax_id:
+          type: string
+        user_sub:
+          type: string
+        transaction_id:
+          type: string
