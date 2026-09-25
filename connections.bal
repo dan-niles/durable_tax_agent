@@ -1,3 +1,4 @@
-import ballerinax/ai.mistral;
+import ballerinax/ai.openai;
 
-final mistral:ModelProvider taxAgentModel = check new (mistralApiKey, mistral:MISTRAL_SMALL_LATEST);
+final openai:ModelProvider taxAgentModel = check new (openRouterApiKey, openai:GPT_4O_MINI,
+    serviceUrl = "https://openrouter.ai/api/v1");

@@ -1,1 +1,1 @@
-configurable string mistralApiKey = ?;
+configurable string openRouterApiKey = ?;
